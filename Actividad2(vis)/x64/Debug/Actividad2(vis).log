@@ -1,2 +1,5 @@
 ﻿  Source.cpp
-  Actividad2(vis).vcxproj -> C:\Users\mario\OneDrive\Escritorio\Semestrre2022\Sistemas inteligentes\Actividad2(C++)\Actividad2-SistemasInt\Actividad2(vis)\x64\Debug\Actividad2(vis).exe
+C:\Users\mario\OneDrive\Escritorio\Semestrre2022\Sistemas inteligentes\Actividad2(C++)\Actividad2-SistemasInt\Actividad2(vis)\Source.cpp(52,15): error C2131: la expresión no se evaluó como una constante
+C:\Users\mario\OneDrive\Escritorio\Semestrre2022\Sistemas inteligentes\Actividad2(C++)\Actividad2-SistemasInt\Actividad2(vis)\Source.cpp(52,15): message : el error se debió a una lectura de una variable fuera de su duración
+C:\Users\mario\OneDrive\Escritorio\Semestrre2022\Sistemas inteligentes\Actividad2(C++)\Actividad2-SistemasInt\Actividad2(vis)\Source.cpp(52,15): message : consulte el uso de 'this'
+C:\Users\mario\OneDrive\Escritorio\Semestrre2022\Sistemas inteligentes\Actividad2(C++)\Actividad2-SistemasInt\Actividad2(vis)\Source.cpp(55,14): error C3863: el tipo de matriz 'bool [this->8<L_ALIGN>0]' no es asignable

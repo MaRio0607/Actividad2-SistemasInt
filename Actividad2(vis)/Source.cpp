@@ -1,101 +1,159 @@
-// Program to print BFS traversal from a given
-// source vertex. BFS(int s) traverses vertices
-// reachable from s.
+// A C++ program to check if a given graph is Eulerian or not
 #include<iostream>
 #include <list>
-
 using namespace std;
 
-// This class represents a directed graph using
-// adjacency list representation
+// A class that represents an undirected graph
 class Graph
 {
 	int V; // No. of vertices
-
-	// Pointer to an array containing adjacency
-	// lists
-	list<int>* adj;
+	list<int>* adj; // A dynamic array of adjacency lists
 public:
-	Graph(int V); // Constructor
+	// Constructor and destructor
+	Graph(int V) { this->V = V; adj = new list<int>[V]; }
+	~Graph() { delete[] adj; } // To avoid memory leak
 
 	// function to add an edge to graph
 	void addEdge(int v, int w);
 
-	// prints BFS traversal from a given source s
-	void BFS(int s);
-};
+	// Method to check if this graph is Eulerian or not
+	int isEulerian();
 
-Graph::Graph(int V)
-{
-	this->V = V;
-	adj = new list<int>[V];
-}
+	// Method to check if all non-zero degree vertices are connected
+	bool isConnected();
+
+	// Function to do DFS starting from v. Used in isConnected();
+	void DFSUtil(int v, bool visited[]);
+};
 
 void Graph::addEdge(int v, int w)
 {
-	adj[v].push_back(w); // Add w to v’s list.
+	adj[v].push_back(w);
+	adj[w].push_back(v); // Note: the graph is undirected
 }
 
-void Graph::BFS(int s)
+void Graph::DFSUtil(int v, bool visited[])
+{
+	// Mark the current node as visited and print it
+	visited[v] = true;
+
+	// Recur for all the vertices adjacent to this vertex
+	list<int>::iterator i;
+	for (i = adj[v].begin(); i != adj[v].end(); ++i)
+		if (!visited[*i])
+			DFSUtil(*i, visited);
+}
+
+// Method to check if all non-zero degree vertices are connected.
+// It mainly does DFS traversal starting from
+bool Graph::isConnected()
 {
 	// Mark all the vertices as not visited
-	bool* visited = new bool[V];
-	for (int i = 0; i < V; i++)
+	bool visited[V];
+	int i;
+	for (i = 0; i < V; i++)
 		visited[i] = false;
 
-	// Create a queue for BFS
-	list<int> queue;
+	// Find a vertex with non-zero degree
+	for (i = 0; i < V; i++)
+		if (adj[i].size() != 0)
+			break;
 
-	// Mark the current node as visited and enqueue it
-	visited[s] = true;
-	queue.push_back(s);
+	// If there are no edges in the graph, return true
+	if (i == V)
+		return true;
 
-	// 'i' will be used to get all adjacentfjkldsahfkashjklahdhks
-	// vertices of a vertex
+	// Start DFS traversal from a vertex with non-zero degree
+	DFSUtil(i, visited);
 
-	list<int>::iterator i;
+	// Check if all non-zero degree vertices are visited
+	for (i = 0; i < V; i++)
+		if (visited[i] == false && adj[i].size() > 0)
+			return false;
 
-	while (!queue.empty())
-	{
-		// Dequeue a vertex from queue and print it
-		s = queue.front();
-		cout << s << " ";
-		queue.pop_front();
-
-		// Get all adjacent vertices of the dequeued
-		// vertex s. If a adjacent has not been visited,
-		// then mark it visited and enqueue it
-		for (i = adj[s].begin(); i != adj[s].end(); ++i)
-		{
-			if (!visited[*i])
-			{
-				visited[*i] = true;
-				queue.push_back(*i);
-			}
-		}
-	}
+	return true;
 }
 
-// Driver program to test methods of graph class
+/* The function returns one of the following values
+0 --> If graph is not Eulerian
+1 --> If graph has an Euler path (Semi-Eulerian)
+2 --> If graph has an Euler Circuit (Eulerian) */
+int Graph::isEulerian()
+{
+	// Check if all non-zero degree vertices are connected
+	if (isConnected() == false)
+		return 0;
+
+	// Count vertices with odd degree
+	int odd = 0;
+	for (int i = 0; i < V; i++)
+		if (adj[i].size() & 1)
+			odd++;
+
+	// If count is more than 2, then graph is not Eulerian
+	if (odd > 2)
+		return 0;
+
+	// If odd count is 2, then semi-eulerian.
+	// If odd count is 0, then eulerian
+	// Note that odd count can never be 1 for undirected graph
+	return (odd) ? 1 : 2;
+}
+
+// Function to run test cases
+void test(Graph& g)
+{
+	int res = g.isEulerian();
+	if (res == 0)
+		cout << "graph is not Eulerian\n";
+	else if (res == 1)
+		cout << "graph has a Euler path\n";
+	else
+		cout << "graph has a Euler cycle\n";
+}
+
+// Driver program to test above function
 int main()
 {
-	// Create a graph given in the above diagram
-	Graph g(10);
-	g.addEdge(0, 2);
-	g.addEdge(0, 3);
-	g.addEdge(0, 7);
-	g.addEdge(0, 9);
-	g.addEdge(1, 0);
-	g.addEdge(1, 2);
-	g.addEdge(1, 5);
-	g.addEdge(1, 9);
-	g.addEdge(2, 0);
-	g.addEdge(2, 3);
-	g.addEdge(3, 3);
+	// Let us create and test graphs shown in above figures
+	Graph g1(5);
+	g1.addEdge(1, 0);
+	g1.addEdge(0, 2);
+	g1.addEdge(2, 1);
+	g1.addEdge(0, 3);
+	g1.addEdge(3, 4);
+	test(g1);
 
-	cout << "Following is Breadth First Traversal "
-		<< "(starting from vertex 2) \n";
-	g.BFS(2);
+	Graph g2(5);
+	g2.addEdge(1, 0);
+	g2.addEdge(0, 2);
+	g2.addEdge(2, 1);
+	g2.addEdge(0, 3);
+	g2.addEdge(3, 4);
+	g2.addEdge(4, 0);
+	test(g2);
+
+	Graph g3(5);
+	g3.addEdge(1, 0);
+	g3.addEdge(0, 2);
+	g3.addEdge(2, 1);
+	g3.addEdge(0, 3);
+	g3.addEdge(3, 4);
+	g3.addEdge(1, 3);
+	test(g3);
+
+	// Let us create a graph with 3 vertices
+	// connected in the form of cycle
+	Graph g4(3);
+	g4.addEdge(0, 1);
+	g4.addEdge(1, 2);
+	g4.addEdge(2, 0);
+	test(g4);
+
+	// Let us create a graph with all vertices
+	// with zero degree
+	Graph g5(3);
+	test(g5);
 
 	return 0;
 }
